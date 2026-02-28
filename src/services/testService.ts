@@ -374,9 +374,9 @@ export async function getTestStatistics(testId: string) {
 
   return {
     totalSubmissions: results.length,
-    averageScore: Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100,
+    averageScore: Math.round((scores.reduce((a: number, b: number) => a + b, 0) / scores.length) * 100) / 100,
     averagePercentage:
-      Math.round((percentages.reduce((a, b) => a + b, 0) / percentages.length) * 100) / 100,
+      Math.round((percentages.reduce((a: number, b: number) => a + b, 0) / percentages.length) * 100) / 100,
     passRate: Math.round((passCount / results.length) * 100 * 100) / 100,
     highestScore: Math.max(...scores),
     lowestScore: Math.min(...scores),
