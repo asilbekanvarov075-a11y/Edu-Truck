@@ -25,7 +25,7 @@ export function generateAccessToken(userId: string, role: UserRole): string {
   const payload: TokenPayload = { userId, role };
   return jwt.sign(payload, ACCESS_TOKEN_SECRET, {
     expiresIn: ACCESS_TOKEN_EXPIRES_IN,
-  });
+  } as jwt.SignOptions);
 }
 
 /**
@@ -35,7 +35,7 @@ export function generateRefreshToken(userId: string, role: UserRole): string {
   const payload: TokenPayload = { userId, role };
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
     expiresIn: REFRESH_TOKEN_EXPIRES_IN,
-  });
+  } as jwt.SignOptions);
 }
 
 /**
