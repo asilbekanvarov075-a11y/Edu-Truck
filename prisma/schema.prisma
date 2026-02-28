@@ -1,0 +1,460 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  STUDENT
+  TEACHER
+  PARENT
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum ChatType {
+  ONE_ON_ONE
+  GROUP
+}
+
+enum NotificationType {
+  GRADE_POSTED
+  ASSIGNMENT_DUE
+  MESSAGE_RECEIVED
+  ATTENDANCE_MARKED
+  COMMENT_ADDED
+  BADGE_EARNED
+  GRADE_DROP
+  HOMEWORK_MISSED
+  LOW_ATTENDANCE
+}
+
+enum NotificationPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum CommentType {
+  IMPROVEMENT
+  STRENGTH
+  GENERAL
+  WARNING
+}
+
+enum BadgeType {
+  PERFECT_ATTENDANCE_WEEK
+  PERFECT_ATTENDANCE_MONTH
+  A_PLUS_STUDENT
+  ASSIGNMENT_STREAK_5
+  ASSIGNMENT_STREAK_10
+  TOP_PERFORMER
+  MOST_IMPROVED
+  EARLY_BIRD
+}
+
+// User and Authentication
+model User {
+  id            String    @id @default(uuid())
+  email         String?   @unique
+  phone         String?   @unique
+  passwordHash  String
+  role          UserRole
+  firstName     String
+  lastName      String
+  isActive      Boolean   @default(true)
+  languagePreference String @default("uz")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  studentProfile  StudentProfile?
+  teacherProfile  TeacherProfile?
+  parentProfile   ParentProfile?
+  
+  sentMessages      ChatMessage[]  @relation("SentMessages")
+  notifications     Notification[]
+  uploadedFiles     FileRecord[]
+  markedAttendance  AttendanceRecord[] @relation("MarkedBy")
+  
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+}
+
+model StudentProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studentId       String   @unique
+  gradeLevel      Int
+  enrollmentDate  DateTime @default(now())
+  dateOfBirth     DateTime?
+  address         String?
+  
+  parents         ParentStudent[]
+  enrollments     Enrollment[]
+  grades          Grade[]
+  submissions     Submission[]
+  testResults     TestResult[]
+  attendance      AttendanceRecord[]
+  learningPlans   LearningPlan[]
+  badges          Badge[]
+  gamification    GamificationStatus?
+  comments        TeacherComment[]
+  
+  @@index([gradeLevel])
+}
+
+model TeacherProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teacherId       String   @unique
+  specialization  String[]
+  bio             String?
+  experience      Int?
+  isApproved      Boolean  @default(false)
+  approvedAt      DateTime?
+  
+  subjects        Subject[]
+  assignments     Assignment[]
+  tests           Test[]
+  grades          Grade[]
+  comments        TeacherComment[]
+}
+
+model ParentProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  occupation String?
+  
+  children  ParentStudent[]
+  preferences NotificationPreferences?
+}
+
+model ParentStudent {
+  id        String   @id @default(uuid())
+  parentId  String
+  parent    ParentProfile @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  relationship String
+  isPrimary    Boolean @default(false)
+  createdAt    DateTime @default(now())
+  
+  @@unique([parentId, studentId])
+  @@index([parentId])
+  @@index([studentId])
+}
+
+// Academic Models
+model Subject {
+  id          String   @id @default(uuid())
+  name        String
+  nameUz      String
+  nameRu      String
+  nameEn      String
+  description String?
+  gradeLevel  Int
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  enrollments Enrollment[]
+  assignments Assignment[]
+  tests       Test[]
+  grades      Grade[]
+  attendance  AttendanceRecord[]
+  
+  @@index([teacherId])
+  @@index([gradeLevel])
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  enrolledAt DateTime @default(now())
+  
+  @@unique([studentId, subjectId])
+  @@index([studentId])
+  @@index([subjectId])
+}
+
+model Grade {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  assignmentId String?
+  assignment  Assignment? @relation(fields: [assignmentId], references: [id])
+  testId      String?
+  test        Test? @relation(fields: [testId], references: [id])
+  value       Float
+  type        String?
+  comment     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([studentId])
+  @@index([subjectId])
+  @@index([teacherId])
+}
+
+model Assignment {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  dueDate     DateTime
+  maxPoints   Int
+  attachments String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  submissions Submission[]
+  grades      Grade[]
+  
+  @@index([subjectId])
+  @@index([teacherId])
+  @@index([dueDate])
+}
+
+model Submission {
+  id          String   @id @default(uuid())
+  assignmentId String
+  assignment  Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  content     String?  @db.Text
+  files       String[]
+  submittedAt DateTime @default(now())
+  grade       Float?
+  feedback    String?  @db.Text
+  gradedAt    DateTime?
+  
+  @@unique([assignmentId, studentId])
+  @@index([assignmentId])
+  @@index([studentId])
+}
+
+model Test {
+  id          String   @id @default(uuid())
+  title       String
+  description String?  @db.Text
+  subjectId   String
+  subject     Subject @relation(fields: [subjectId], references: [id])
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  timeLimit   Int
+  passingScore Float
+  scheduledFor DateTime
+  questions   Json
+  createdAt   DateTime @default(now())
+  
+  results     TestResult[]
+  grades      Grade[]
+  
+  @@index([subjectId])
+  @@index([teacherId])
+  @@index([scheduledFor])
+}
+
+model TestResult {
+  id          String   @id @default(uuid())
+  testId      String
+  test        Test @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  answers     Json
+  score       Float
+  maxScore    Float
+  submittedAt DateTime @default(now())
+  
+  @@unique([testId, studentId])
+  @@index([testId])
+  @@index([studentId])
+}
+
+model TeacherComment {
+  id        String   @id @default(uuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacherId String
+  teacher   TeacherProfile @relation(fields: [teacherId], references: [id])
+  subjectId String?
+  content   String   @db.Text
+  type      CommentType
+  createdAt DateTime @default(now())
+  
+  @@index([studentId])
+  @@index([teacherId])
+}
+
+model LearningPlan {
+  id        String   @id @default(uuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  goals     Json
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([studentId])
+}
+
+// Attendance
+model AttendanceRecord {
+  id        String   @id @default(uuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id])
+  date      DateTime
+  status    AttendanceStatus
+  markedBy  String
+  marker    User @relation("MarkedBy", fields: [markedBy], references: [id])
+  markedAt  DateTime @default(now())
+  qrCodeUsed Boolean @default(false)
+  note      String?
+  
+  @@index([studentId])
+  @@index([subjectId])
+  @@index([date])
+}
+
+model QRCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  subjectId String
+  sessionDate DateTime
+  expiresAt DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  
+  @@index([code])
+  @@index([expiresAt])
+}
+
+// Gamification
+model Badge {
+  id        String   @id @default(uuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type      BadgeType
+  name      String
+  description String
+  iconUrl   String?
+  earnedAt  DateTime @default(now())
+  
+  @@index([studentId])
+}
+
+model GamificationStatus {
+  id              String   @id @default(uuid())
+  studentId       String   @unique
+  student         StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  level           Int      @default(1)
+  experiencePoints Int     @default(0)
+  currentStreak   Int      @default(0)
+  longestStreak   Int      @default(0)
+  updatedAt       DateTime @updatedAt
+}
+
+// Chat and Messaging
+model Chat {
+  id          String   @id @default(uuid())
+  type        ChatType
+  participants String[]
+  createdAt   DateTime @default(now())
+  lastMessageAt DateTime?
+  
+  messages    ChatMessage[]
+  
+  @@index([participants])
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  chatId    String
+  chat      Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User @relation("SentMessages", fields: [senderId], references: [id])
+  content   String   @db.Text
+  attachments String[]
+  readBy    String[]
+  sentAt    DateTime @default(now())
+  
+  @@index([chatId])
+  @@index([senderId])
+}
+
+// Notifications
+model Notification {
+  id        String   @id @default(uuid())
+  recipientId String
+  recipient User @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String   @db.Text
+  data      Json?
+  priority  NotificationPriority
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  
+  @@index([recipientId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model NotificationPreferences {
+  id        String   @id @default(uuid())
+  parentId  String   @unique
+  parent    ParentProfile @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  email     Boolean  @default(true)
+  inApp     Boolean  @default(true)
+  sms       Boolean  @default(false)
+  digestFrequency String @default("IMMEDIATE")
+  enabledTypes Json
+  updatedAt DateTime @updatedAt
+}
+
+// File Storage
+model FileRecord {
+  id        String   @id @default(uuid())
+  fileName  String
+  fileSize  Int
+  mimeType  String
+  storageKey String  @unique
+  entityType String
+  entityId  String
+  uploadedBy String
+  uploader  User @relation(fields: [uploadedBy], references: [id])
+  uploadedAt DateTime @default(now())
+  
+  @@index([entityType, entityId])
+  @@index([uploadedBy])
+}

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Ta'lim Boshqaruv Tizimi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 1200px;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .login-section {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+        
+        .login-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .test-accounts {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+        
+        .test-accounts h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .account-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 EduTrack</h1>
+            <p>Zamonaviy Ta'lim Boshqaruv Tizimi</p>
+        </div>
+        
+        <div class="content">
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Foydalanuvchi Rollari</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">25+</div>
+                    <div class="stat-label">Database Modellari</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">API Endpoints</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Backend Tayyor</div>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍🎓</div>
+                    <h3>O'quvchilar</h3>
+                    <p>Baholar, vazifalar, testlar va o'quv rejasini kuzatish</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍🏫</div>
+                    <h3>O'qituvchilar</h3>
+                    <p>Baho qo'yish, vazifa berish, davomat belgilash</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍👩‍👧</div>
+                    <h3>Ota-onalar</h3>
+                    <p>Farzand rivojini real vaqtda monitoring qilish</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Administratorlar</h3>
+                    <p>Tizimni boshqarish va statistika</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analytics</h3>
+                    <p>Chuqur tahlil va hisobotlar</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3>Gamification</h3>
+                    <p>XP, level, badge va leaderboard</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Chat</h3>
+                    <p>Real-time muloqot tizimi</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Notifications</h3>
+                    <p>Smart bildirishnomalar</p>
+                </div>
+            </div>
+            
+            <div class="login-section">
+                <h2>🔐 Demo Login</h2>
+                <div id="status" class="status"></div>
+                
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="role">Rol Tanlang</label>
+                        <select id="role" name="role" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                            <option value="student">👨‍🎓 O'quvchi</option>
+                            <option value="teacher">👩‍🏫 O'qituvchi</option>
+                            <option value="parent">👨‍👩‍👧 Ota-ona</option>
+                            <option value="admin">⚙️ Administrator</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="text" id="email" name="email" placeholder="student@edutrack.uz" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Parol</label>
+                        <input type="password" id="password" name="password" placeholder="Student123!" required>
+                    </div>
+                    <button type="submit" class="btn">Kirish</button>
+                </form>
+                
+                <div class="test-accounts">
+                    <h3>📝 Test Accounts:</h3>
+                    <div class="account-item">👨‍🎓 Student: student@edutrack.uz / Student123!</div>
+                    <div class="account-item">👨‍🏫 Teacher: teacher@edutrack.uz / Teacher123!</div>
+                    <div class="account-item">👨‍👩‍👧 Parent: parent@edutrack.uz / Parent123!</div>
+                    <div class="account-item">⚙️ Admin: admin@edutrack.uz / Admin123!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const role = document.getElementById('role').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const statusDiv = document.getElementById('status');
+            
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'status info';
+            statusDiv.textContent = '⏳ Kirish amalga oshirilmoqda...';
+            
+            // Role ga qarab dashboard ni tanlash
+            const dashboards = {
+                student: 'demo.html',
+                teacher: 'teacher-dashboard.html',
+                parent: 'parent-dashboard.html',
+                admin: 'admin-dashboard.html'
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        identifier: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `
+                        ✅ Muvaffaqiyatli kirdingiz!<br>
+                        <strong>Rol:</strong> ${data.user.role}<br>
+                        <strong>Ism:</strong> ${data.user.firstName} ${data.user.lastName}
+                    `;
+                    
+                    // Token ni saqlash
+                    localStorage.setItem('token', data.accessToken);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Dashboard ga o'tish
+                    setTimeout(() => {
+                        window.location.href = dashboards[role];
+                    }, 1500);
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = `❌ Xatolik: ${data.message || 'Login yoki parol noto\'g\'ri'}`;
+                }
+            } catch (error) {
+                // Server ishlamasa, demo ga o'tkazish
+                const email = document.getElementById('email').value.toLowerCase();
+                let dashboardUrl = 'dashboard.html'; // default student
+                let roleName = 'O\'quvchi';
+                
+                if (email.includes('admin')) {
+                    dashboardUrl = 'admin-dashboard.html';
+                    roleName = 'Administrator';
+                } else if (email.includes('teacher')) {
+                    dashboardUrl = 'teacher-dashboard.html';
+                    roleName = 'O\'qituvchi';
+                } else if (email.includes('parent')) {
+                    dashboardUrl = 'parent-dashboard.html';
+                    roleName = 'Ota-ona';
+                }
+                
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = `
+                    ✅ Demo rejimda kirilmoqda...<br>
+                    <strong>Rol:</strong> ${roleName}<br>
+                    <small>Server ishlamayapti, lekin demo versiyani ko'rishingiz mumkin!</small>
+                `;
+                
+                // Rolni saqlash
+                localStorage.setItem('demoRole', roleName);
+                localStorage.setItem('demoEmail', email);
+                
+                setTimeout(() => {
+                    window.location.href = dashboardUrl;
+                }, 1500);
+            }
+        });
+        
+        // Health check
+        async function checkServer() {
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                if (response.ok) {
+                    console.log('✅ Server ishlayapti!');
+                }
+            } catch (error) {
+                console.log('❌ Server ishlamayapti. npm run dev ni ishga tushiring.');
+            }
+        }
+        
+        checkServer();
+    </script>
+</body>
+</html>
