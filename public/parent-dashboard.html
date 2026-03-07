@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Ota-ona Paneli</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar h1 { font-size: 1.8em; display: flex; align-items: center; gap: 15px; }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logout-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .welcome {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .welcome h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .child-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .child-btn {
+            padding: 12px 25px;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .child-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .child-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .stat-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon.good { color: #28a745; }
+        .stat-icon.warning { color: #ffc107; }
+        .stat-icon.danger { color: #dc3545; }
+        .stat-icon.info { color: #17a2b8; }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .grade-item {
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .grade-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .grade-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .grade-good { color: #28a745; }
+        .grade-average { color: #ffc107; }
+        .grade-poor { color: #dc3545; }
+        
+        .alert {
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: start;
+            gap: 15px;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            color: #856404;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+        
+        .alert i {
+            font-size: 1.5em;
+        }
+        
+        .progress-item {
+            margin-bottom: 20px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 1s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <i class="fas fa-users"></i>
+            EduTrack - Ota-ona
+        </h1>
+        <div class="user-section">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                Chiqish
+            </button>
+            <div style="text-align: right;">
+                <div style="font-weight: 600; font-size: 1.1em;">Dilshod Rahimov</div>
+                <div style="font-size: 0.9em; opacity: 0.9;">Ota-ona</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome">
+            <h2>
+                <i class="fas fa-heart"></i>
+                Farzandingiz Rivojini Kuzating
+            </h2>
+            <p style="font-size: 1.1em; color: #666;">Farzandingizning o'quv jarayonini real vaqtda monitoring qiling</p>
+            
+            <div class="child-selector">
+                <button class="child-btn active">
+                    <i class="fas fa-user-graduate"></i>
+                    Alisher Rahimov (10-A)
+                </button>
+                <button class="child-btn">
+                    <i class="fas fa-user-graduate"></i>
+                    Madina Rahimova (8-B)
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-chart-line stat-icon good"></i>
+                <div class="stat-value">4.5</div>
+                <div class="stat-label">O'rtacha Ball</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-check stat-icon good"></i>
+                <div class="stat-value">95%</div>
+                <div class="stat-label">Davomat</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-tasks stat-icon warning"></i>
+                <div class="stat-value">12/15</div>
+                <div class="stat-label">Vazifalar</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy stat-icon info"></i>
+                <div class="stat-value">Level 5</div>
+                <div class="stat-label">Reyting</div>
+            </div>
+        </div>
+        
+        <div class="content-grid">
+            <div>
+                <div class="card">
+                    <h3>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Diqqat Talab Qiladi
+                    </h3>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>Vazifa muddati yaqinlashmoqda</strong>
+                            <p>Ingliz tili - Essay yozish. Muddat: 15 Fevral 2026 (3 kun qoldi)</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>Ajoyib natija!</strong>
+                            <p>Matematika imtihonida 95 ball oldi. O'qituvchi izohi: "Mukammal!"</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>
+                        <i class="fas fa-book"></i>
+                        Oxirgi Baholar
+                    </h3>
+                    <div class="grade-item">
+                        <h4>Matematika</h4>
+                        <span class="grade-value grade-good">95</span>
+                        <span style="color: #666;">Imtihon - 05.02.2026</span>
+                        <p style="color: #28a745; margin-top: 10px; font-weight: 600;">
+                            <i class="fas fa-comment"></i> "Ajoyib natija! Davom eting!"
+                        </p>
+                    </div>
+                    <div class="grade-item">
+                        <h4>Fizika</h4>
+                        <span class="grade-value grade-average">88</span>
+                        <span style="color: #666;">Nazorat - 04.02.2026</span>
+                        <p style="color: #ffc107; margin-top: 10px; font-weight: 600;">
+                            <i class="fas fa-comment"></i> "Yaxshi, lekin yanada yaxshiroq bo'lishi mumkin"
+                        </p>
+                    </div>
+                    <div class="grade-item">
+                        <h4>Ingliz tili</h4>
+                        <span class="grade-value grade-good">92</span>
+                        <span style="color: #666;">Og'zaki - 03.02.2026</span>
+                        <p style="color: #28a745; margin-top: 10px; font-weight: 600;">
+                            <i class="fas fa-comment"></i> "Talaffuz juda yaxshi!"
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="card">
+                    <h3>
+                        <i class="fas fa-chart-bar"></i>
+                        Fanlar bo'yicha Progress
+                    </h3>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span><i class="fas fa-calculator"></i> Matematika</span>
+                            <span style="color: #667eea;">92%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 92%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span><i class="fas fa-atom"></i> Fizika</span>
+                            <span style="color: #667eea;">88%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 88%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span><i class="fas fa-language"></i> Ingliz tili</span>
+                            <span style="color: #667eea;">90%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-item">
+                        <div class="progress-header">
+                            <span><i class="fas fa-landmark"></i> Tarix</span>
+                            <span style="color: #667eea;">85%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3>
+                        <i class="fas fa-bell"></i>
+                        Bildirishnomalar
+                    </h3>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <i class="fas fa-star" style="color: #ffc107;"></i>
+                            <strong>Yangi baho</strong>
+                        </div>
+                        <p style="color: #666; font-size: 0.95em;">Matematika fanidan 95 ball oldi</p>
+                        <small style="color: #999;">2 soat oldin</small>
+                    </div>
+                    <div style="padding: 15px; background: #f8f9fa; border-radius: 10px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                            <strong>Vazifa topshirildi</strong>
+                        </div>
+                        <p style="color: #666; font-size: 0.95em;">Fizika vazifasi topshirildi</p>
+                        <small style="color: #999;">5 soat oldin</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function logout() {
+            if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+        
+        window.addEventListener('load', () => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
