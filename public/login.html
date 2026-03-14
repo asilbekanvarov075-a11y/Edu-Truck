@@ -297,10 +297,10 @@
         
         function getDashboard(role) {
             const map = {
-                student: 'dashboard.html',
-                teacher: 'teacher-dashboard.html',
-                parent: 'parent-dashboard.html',
-                admin: 'admin-dashboard.html'
+                student: 'dashboard.html', STUDENT: 'dashboard.html',
+                teacher: 'teacher-dashboard.html', TEACHER: 'teacher-dashboard.html',
+                parent: 'parent-dashboard.html', PARENT: 'parent-dashboard.html',
+                admin: 'admin-dashboard.html', ADMIN: 'admin-dashboard.html'
             };
             return map[role] || 'dashboard.html';
         }
@@ -312,20 +312,34 @@
             
             showStatus('loginStatus', 'info', '<i class="fas fa-spinner fa-spin"></i> Tekshirilmoqda...');
             
-            setTimeout(() => {
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(r => r.json().then(data => ({ ok: r.ok, data })))
+            .then(({ ok, data }) => {
+                if (ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${data.user.firstName}!`);
+                    setTimeout(() => { window.location.href = getDashboard(data.user.role); }, 1000);
+                } else {
+                    showStatus('loginStatus', 'error', `<i class="fas fa-exclamation-circle"></i> ${data.error}`);
+                }
+            })
+            .catch(() => {
+                // Demo mode fallback
                 const users = getUsers();
                 const user = users.find(u => u.email === email && u.password === password);
-                
                 if (user) {
                     showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${user.name}!`);
                     localStorage.setItem('currentUser', JSON.stringify(user));
-                    setTimeout(() => {
-                        window.location.href = getDashboard(user.role);
-                    }, 1000);
+                    setTimeout(() => { window.location.href = getDashboard(user.role); }, 1000);
                 } else {
                     showStatus('loginStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Email yoki parol noto\'g\'ri');
                 }
-            }, 600);
+            });
         }
         
         function handleRegister(e) {
@@ -340,31 +354,41 @@
                 return;
             }
             
-            const users = getUsers();
+            const [firstName, ...rest] = name.split(' ');
+            const lastName = rest.join(' ') || '-';
             
-            if (users.find(u => u.email === email)) {
-                showStatus('registerStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Bu email allaqachon ro\'yxatdan o\'tgan');
-                return;
-            }
+            showStatus('registerStatus', 'info', '<i class="fas fa-spinner fa-spin"></i> Ro\'yxatdan o\'tilmoqda...');
             
-            const newUser = {
-                id: Date.now(),
-                name,
-                email,
-                password,
-                role,
-                createdAt: new Date().toISOString()
-            };
-            
-            users.push(newUser);
-            saveUsers(users);
-            
-            showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli ro\'yxatdan o\'tdingiz! Kirishga o\'tilmoqda...');
-            localStorage.setItem('currentUser', JSON.stringify(newUser));
-            
-            setTimeout(() => {
-                window.location.href = getDashboard(role);
-            }, 1200);
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, firstName, lastName, role: role.toUpperCase() })
+            })
+            .then(r => r.json().then(data => ({ ok: r.ok, data })))
+            .then(({ ok, data }) => {
+                if (ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli! Yo\'naltirilmoqda...');
+                    setTimeout(() => { window.location.href = getDashboard(data.user.role); }, 1200);
+                } else {
+                    showStatus('registerStatus', 'error', `<i class="fas fa-exclamation-circle"></i> ${data.error}`);
+                }
+            })
+            .catch(() => {
+                // Demo mode fallback
+                const users = getUsers();
+                if (users.find(u => u.email === email)) {
+                    showStatus('registerStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Bu email allaqachon ro\'yxatdan o\'tgan');
+                    return;
+                }
+                const newUser = { id: Date.now(), name, email, password, role: role.toLowerCase(), createdAt: new Date().toISOString() };
+                users.push(newUser);
+                saveUsers(users);
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli ro\'yxatdan o\'tdingiz!');
+                setTimeout(() => { window.location.href = getDashboard(role); }, 1200);
+            });
         }
     </script>
 </body>
