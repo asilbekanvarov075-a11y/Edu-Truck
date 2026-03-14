@@ -194,17 +194,17 @@
     <script>
         function logout() {
             if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
-                localStorage.clear();
-                window.location.href = 'index.html';
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
             }
         }
         
         function approve(name) {
-            alert(`✅ ${name} tasdiqlandi!`);
+            alert(`${name} tasdiqlandi!`);
         }
         
         function reject(name) {
-            if (confirm(`❌ ${name}ni rad etmoqchimisiz?`)) {
+            if (confirm(`${name}ni rad etmoqchimisiz?`)) {
                 alert(`${name} rad etildi.`);
             }
         }

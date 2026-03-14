@@ -269,7 +269,7 @@
                 Chiqish
             </button>
             <div style="text-align: right;">
-                <div style="font-weight: 600; font-size: 1.1em;">Dilshod Rahimov</div>
+                <div style="font-weight: 600; font-size: 1.1em;" class="user-name">Ota-ona</div>
                 <div style="font-size: 0.9em; opacity: 0.9;">Ota-ona</div>
             </div>
         </div>
@@ -446,9 +446,15 @@
     <script>
         function logout() {
             if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
-                localStorage.clear();
+                localStorage.removeItem('currentUser');
                 window.location.href = 'login.html';
             }
+        }
+        
+        // Load current user name
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (currentUser.name) {
+            document.querySelectorAll('.user-name').forEach(el => el.textContent = currentUser.name);
         }
         
         window.addEventListener('load', () => {

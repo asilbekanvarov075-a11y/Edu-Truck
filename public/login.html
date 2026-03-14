@@ -6,11 +6,7 @@
     <title>EduTrack - Kirish</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -57,35 +53,49 @@
             -webkit-text-fill-color: transparent;
         }
         
-        .login-header h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
+        .login-header h1 { font-size: 2em; margin-bottom: 10px; }
+        .login-header p { opacity: 0.95; font-size: 1.05em; }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
         }
         
-        .login-header p {
-            opacity: 0.95;
-            font-size: 1.05em;
+        .tab {
+            flex: 1;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
         }
         
-        .login-body {
-            padding: 40px;
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
         }
         
-        .form-group {
-            margin-bottom: 25px;
-        }
+        .tab:hover { color: #667eea; }
+        
+        .login-body { padding: 35px 40px; }
+        
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+        
+        .form-group { margin-bottom: 22px; }
         
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #333;
             font-weight: 600;
             font-size: 0.95em;
         }
         
-        .input-wrapper {
-            position: relative;
-        }
+        .input-wrapper { position: relative; }
         
         .input-wrapper i {
             position: absolute;
@@ -96,22 +106,25 @@
             font-size: 1.1em;
         }
         
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 15px 15px 15px 45px;
+            padding: 14px 14px 14px 45px;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
             font-size: 1em;
             transition: all 0.3s;
+            background: white;
         }
         
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
         
-        .btn-login {
+        .btn-submit {
             width: 100%;
             padding: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -122,108 +135,41 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
-        .btn-login:hover {
+        .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
         
-        .btn-login:active {
-            transform: translateY(0);
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 30px 0;
-            position: relative;
-        }
-        
-        .divider::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 1px;
-            background: #e0e0e0;
-        }
-        
-        .divider span {
-            background: white;
-            padding: 0 15px;
-            position: relative;
-            color: #999;
-            font-size: 0.9em;
-        }
-        
-        .test-accounts {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .test-accounts h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .account-item {
-            padding: 12px;
-            margin: 8px 0;
-            background: white;
-            border-radius: 8px;
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .account-item:hover {
-            background: #667eea;
-            color: white;
-            transform: translateX(5px);
-        }
-        
-        .account-item i {
-            width: 30px;
-            text-align: center;
-        }
-        
         .status {
             text-align: center;
-            padding: 15px;
-            margin-top: 20px;
+            padding: 14px;
+            margin-bottom: 20px;
             border-radius: 10px;
             display: none;
             font-size: 0.95em;
         }
         
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .role-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #666;
+            border-left: 4px solid #667eea;
         }
         
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
+        .role-info i { color: #667eea; margin-right: 6px; }
     </style>
 </head>
 <body>
@@ -236,143 +182,190 @@
             <p>Ta'lim Boshqaruv Tizimi</p>
         </div>
         
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt"></i> Kirish
+            </div>
+            <div class="tab" onclick="switchTab('register')">
+                <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
+            </div>
+        </div>
+        
         <div class="login-body">
-            <div id="status" class="status"></div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="email">
-                        <i class="fas fa-envelope"></i> Email yoki Telefon
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="email" name="email" placeholder="student@edutrack.uz" required>
+            <!-- LOGIN PANEL -->
+            <div id="loginPanel" class="form-panel active">
+                <div id="loginStatus" class="status"></div>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="email" id="loginEmail" placeholder="email@example.com" required>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">
-                        <i class="fas fa-lock"></i> Parol
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-key"></i>
-                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Parol</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        </div>
                     </div>
-                </div>
-                
-                <button type="submit" class="btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Kirish
-                </button>
-            </form>
-            
-            <div class="divider">
-                <span>yoki test accountlar</span>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-sign-in-alt"></i> Kirish
+                    </button>
+                </form>
             </div>
             
-            <div class="test-accounts">
-                <h3>
-                    <i class="fas fa-flask"></i> Test Accounts
-                </h3>
-                <div class="account-item" onclick="fillLogin('student@edutrack.uz', 'Student123!')">
-                    <i class="fas fa-user-graduate"></i>
-                    <span>Student: student@edutrack.uz</span>
+            <!-- REGISTER PANEL -->
+            <div id="registerPanel" class="form-panel">
+                <div id="registerStatus" class="status"></div>
+                <div class="role-info">
+                    <i class="fas fa-info-circle"></i>
+                    Rolni to'g'ri tanlang: O'quvchi, O'qituvchi yoki Ota-ona
                 </div>
-                <div class="account-item" onclick="fillLogin('teacher@edutrack.uz', 'Teacher123!')">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Teacher: teacher@edutrack.uz</span>
-                </div>
-                <div class="account-item" onclick="fillLogin('parent@edutrack.uz', 'Parent123!')">
-                    <i class="fas fa-users"></i>
-                    <span>Parent: parent@edutrack.uz</span>
-                </div>
-                <div class="account-item" onclick="fillLogin('admin@edutrack.uz', 'Admin123!')">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Admin: admin@edutrack.uz</span>
-                </div>
+                <form id="registerForm" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Ism va Familiya</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" id="regName" placeholder="Ism Familiya" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-at"></i>
+                            <input type="email" id="regEmail" placeholder="email@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Parol</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="regPassword" placeholder="Kamida 6 ta belgi" required minlength="6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users-cog"></i> Rol</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-tag"></i>
+                            <select id="regRole" required>
+                                <option value="">-- Rolni tanlang --</option>
+                                <option value="student">O'quvchi</option>
+                                <option value="teacher">O'qituvchi</option>
+                                <option value="parent">Ota-ona</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
+                    </button>
+                </form>
             </div>
         </div>
     </div>
     
     <script>
-        const API_URL = 'http://localhost:5000/api';
-        
-        function fillLogin(email, password) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
+        // Simple local user storage (demo mode - no backend)
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('edutrack_users') || '[]');
         }
         
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        function saveUsers(users) {
+            localStorage.setItem('edutrack_users', JSON.stringify(users));
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelector('.tab:first-child').classList.add('active');
+                document.getElementById('loginPanel').classList.add('active');
+            } else {
+                document.querySelector('.tab:last-child').classList.add('active');
+                document.getElementById('registerPanel').classList.add('active');
+            }
+        }
+        
+        function showStatus(id, type, message) {
+            const el = document.getElementById(id);
+            el.className = `status ${type}`;
+            el.innerHTML = message;
+            el.style.display = 'block';
+        }
+        
+        function getDashboard(role) {
+            const map = {
+                student: 'dashboard.html',
+                teacher: 'teacher-dashboard.html',
+                parent: 'parent-dashboard.html',
+                admin: 'admin-dashboard.html'
+            };
+            return map[role] || 'dashboard.html';
+        }
+        
+        function handleLogin(e) {
             e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const statusDiv = document.getElementById('status');
+            showStatus('loginStatus', 'info', '<i class="fas fa-spinner fa-spin"></i> Tekshirilmoqda...');
             
-            statusDiv.style.display = 'block';
-            statusDiv.className = 'status info';
-            statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kirish amalga oshirilmoqda...';
-            
-            try {
-                const response = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        identifier: email,
-                        password: password
-                    })
-                });
+            setTimeout(() => {
+                const users = getUsers();
+                const user = users.find(u => u.email === email && u.password === password);
                 
-                const data = await response.json();
-                
-                if (response.ok) {
-                    statusDiv.className = 'status success';
-                    statusDiv.innerHTML = `
-                        <i class="fas fa-check-circle"></i> Muvaffaqiyatli!<br>
-                        <strong>Rol:</strong> ${data.user.role}
-                    `;
-                    
-                    localStorage.setItem('token', data.accessToken);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    
+                if (user) {
+                    showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${user.name}!`);
+                    localStorage.setItem('currentUser', JSON.stringify(user));
                     setTimeout(() => {
-                        window.location.href = 'full-dashboard.html';
+                        window.location.href = getDashboard(user.role);
                     }, 1000);
                 } else {
-                    statusDiv.className = 'status error';
-                    statusDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${data.message || 'Login yoki parol noto\'g\'ri'}`;
+                    showStatus('loginStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Email yoki parol noto\'g\'ri');
                 }
-            } catch (error) {
-                const emailLower = email.toLowerCase();
-                let dashboardUrl = 'full-dashboard.html';
-                let roleName = 'O\'quvchi';
-                
-                if (emailLower.includes('admin')) {
-                    dashboardUrl = 'admin-dashboard.html';
-                    roleName = 'Administrator';
-                } else if (emailLower.includes('teacher')) {
-                    dashboardUrl = 'teacher-dashboard.html';
-                    roleName = 'O\'qituvchi';
-                } else if (emailLower.includes('parent')) {
-                    dashboardUrl = 'parent-dashboard.html';
-                    roleName = 'Ota-ona';
-                }
-                
-                statusDiv.className = 'status success';
-                statusDiv.innerHTML = `
-                    <i class="fas fa-check-circle"></i> Demo rejimda kirilmoqda...<br>
-                    <strong>Rol:</strong> ${roleName}
-                `;
-                
-                localStorage.setItem('demoRole', roleName);
-                localStorage.setItem('demoEmail', email);
-                
-                setTimeout(() => {
-                    window.location.href = dashboardUrl;
-                }, 1000);
+            }, 600);
+        }
+        
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            
+            if (!name || !email || !password || !role) {
+                showStatus('registerStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Barcha maydonlarni to\'ldiring');
+                return;
             }
-        });
+            
+            const users = getUsers();
+            
+            if (users.find(u => u.email === email)) {
+                showStatus('registerStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Bu email allaqachon ro\'yxatdan o\'tgan');
+                return;
+            }
+            
+            const newUser = {
+                id: Date.now(),
+                name,
+                email,
+                password,
+                role,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            saveUsers(users);
+            
+            showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli ro\'yxatdan o\'tdingiz! Kirishga o\'tilmoqda...');
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            
+            setTimeout(() => {
+                window.location.href = getDashboard(role);
+            }, 1200);
+        }
     </script>
 </body>
 </html>
