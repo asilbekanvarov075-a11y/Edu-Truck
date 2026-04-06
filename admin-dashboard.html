@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Admin Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover { background: white; color: #667eea; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .welcome h2 { color: #667eea; font-size: 2em; margin-bottom: 10px; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-icon { font-size: 3em; margin-bottom: 15px; }
+        .stat-value { font-size: 2.5em; font-weight: bold; color: #667eea; }
+        .stat-label { color: #666; margin-top: 10px; font-size: 1.1em; }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .card h3 { color: #667eea; margin-bottom: 20px; font-size: 1.5em; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f8f9fa; font-weight: 600; color: #667eea; }
+        .btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>⚙️ EduTrack - Admin Panel</h1>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <button class="logout-btn" onclick="logout()">🚪 Chiqish</button>
+            <div style="text-align: right;">
+                <div style="font-weight: 600; font-size: 1.1em;">Administrator</div>
+                <div style="font-size: 0.9em; opacity: 0.9;">Admin</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="welcome">
+            <h2>Admin Panel 🎛️</h2>
+            <p style="font-size: 1.1em; color: #666;">Platformani boshqarish va monitoring</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value">1,234</div>
+                <div class="stat-label">Jami Foydalanuvchilar</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👨‍🎓</div>
+                <div class="stat-value">856</div>
+                <div class="stat-label">O'quvchilar</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👨‍🏫</div>
+                <div class="stat-value">124</div>
+                <div class="stat-label">O'qituvchilar</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value">45</div>
+                <div class="stat-label">Fanlar</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>👨‍🏫 Tasdiqlanishi Kerak Bo'lgan O'qituvchilar</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ism</th>
+                        <th>Email</th>
+                        <th>Mutaxassislik</th>
+                        <th>Sana</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nodira Karimova</td>
+                        <td>nodira@example.com</td>
+                        <td>Matematika</td>
+                        <td>08.02.2026</td>
+                        <td>
+                            <button class="btn btn-success" onclick="approve('Nodira')">✅ Tasdiqlash</button>
+                            <button class="btn btn-danger" onclick="reject('Nodira')">❌ Rad etish</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Jasur Rahimov</td>
+                        <td>jasur@example.com</td>
+                        <td>Fizika</td>
+                        <td>07.02.2026</td>
+                        <td>
+                            <button class="btn btn-success" onclick="approve('Jasur')">✅ Tasdiqlash</button>
+                            <button class="btn btn-danger" onclick="reject('Jasur')">❌ Rad etish</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card">
+            <h3>📊 Oxirgi Faoliyat</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Foydalanuvchi</th>
+                        <th>Amal</th>
+                        <th>Vaqt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alisher Valiyev</td>
+                        <td>Vazifa topshirdi</td>
+                        <td>5 daqiqa oldin</td>
+                    </tr>
+                    <tr>
+                        <td>Nodira Karimova</td>
+                        <td>Baho qo'ydi</td>
+                        <td>15 daqiqa oldin</td>
+                    </tr>
+                    <tr>
+                        <td>Dilshod Rahimov</td>
+                        <td>Tizimga kirdi</td>
+                        <td>30 daqiqa oldin</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        function logout() {
+            if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        function approve(name) {
+            alert(`${name} tasdiqlandi!`);
+        }
+        
+        function reject(name) {
+            if (confirm(`${name}ni rad etmoqchimisiz?`)) {
+                alert(`${name} rad etildi.`);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - O'quvchi Paneli</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar h1 { font-size: 1.8em; display: flex; align-items: center; gap: 12px; }
+
+        .user-section { display: flex; align-items: center; gap: 20px; }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover { background: white; color: #667eea; transform: translateY(-2px); }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
+
+        .welcome {
+            background: white;
+            padding: 35px 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .welcome h2 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 28px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+
+        .stat-icon { font-size: 2.8em; margin-bottom: 12px; }
+        .stat-icon.green  { color: #28a745; }
+        .stat-icon.blue   { color: #667eea; }
+        .stat-icon.orange { color: #ffc107; }
+        .stat-icon.purple { color: #764ba2; }
+
+        .stat-value { font-size: 2.3em; font-weight: bold; color: #667eea; margin: 8px 0; }
+        .stat-label { color: #666; font-size: 1em; font-weight: 500; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 22px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .grade-item {
+            padding: 18px;
+            border-left: 5px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 12px;
+            border-radius: 10px;
+        }
+
+        .grade-item h4 { color: #333; margin-bottom: 8px; font-size: 1.1em; }
+
+        .grade-value { font-size: 1.9em; font-weight: bold; }
+        .grade-good    { color: #28a745; }
+        .grade-average { color: #ffc107; }
+        .grade-poor    { color: #dc3545; }
+
+        .assignment-item {
+            padding: 18px;
+            background: #f8f9fa;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            border-left: 5px solid #17a2b8;
+        }
+
+        .assignment-item h4 { color: #333; margin-bottom: 8px; font-size: 1.05em; }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.88em;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .badge-graded    { background: #d4edda; color: #155724; }
+        .badge-submitted { background: #d1ecf1; color: #0c5460; }
+        .badge-pending   { background: #fff3cd; color: #856404; }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 8px 0 16px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 1s ease;
+        }
+
+        .xp-section { text-align: center; margin-bottom: 20px; }
+
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .earn-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 10px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .earn-badge i { font-size: 2em; display: block; margin-bottom: 6px; }
+        .earn-badge span { font-size: 0.82em; font-weight: 600; }
+
+        @media (max-width: 768px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .navbar { padding: 15px 20px; }
+            .navbar h1 { font-size: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <i class="fas fa-graduation-cap"></i>
+            EduTrack
+        </h1>
+        <div class="user-section">
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Chiqish
+            </button>
+            <div style="text-align: right;">
+                <div style="font-weight: 600; font-size: 1.1em;" id="userName">O'quvchi</div>
+                <div style="font-size: 0.9em; opacity: 0.85;">O'quvchi</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="welcome">
+            <h2>
+                <i class="fas fa-hand-wave" style="color:#ffc107;"></i>
+                Xush kelibsiz, <span id="welcomeName">O'quvchi</span>!
+            </h2>
+            <p style="color: #666; font-size: 1.05em;">Bugun sizning o'quv jarayoningiz qanday kechmoqda?</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-chart-line stat-icon green"></i>
+                <div class="stat-value">4.5</div>
+                <div class="stat-label">O'rtacha Ball (GPA)</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-calendar-check stat-icon blue"></i>
+                <div class="stat-value">95%</div>
+                <div class="stat-label">Davomat</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-tasks stat-icon orange"></i>
+                <div class="stat-value">12/15</div>
+                <div class="stat-label">Topshirilgan Vazifalar</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-trophy stat-icon purple"></i>
+                <div class="stat-value">Level 5</div>
+                <div class="stat-label">1250 XP</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div>
+                <div class="card">
+                    <h3><i class="fas fa-book-open"></i> Oxirgi Baholar</h3>
+                    <div class="grade-item">
+                        <h4>Matematika</h4>
+                        <span class="grade-value grade-good">95</span>
+                        <p style="color:#666; margin-top:6px; font-size:0.95em;">
+                            <i class="fas fa-calendar-alt"></i> Imtihon — 05.02.2026
+                        </p>
+                    </div>
+                    <div class="grade-item">
+                        <h4>Fizika</h4>
+                        <span class="grade-value grade-average">88</span>
+                        <p style="color:#666; margin-top:6px; font-size:0.95em;">
+                            <i class="fas fa-calendar-alt"></i> Nazorat ishi — 04.02.2026
+                        </p>
+                    </div>
+                    <div class="grade-item">
+                        <h4>Ingliz tili</h4>
+                        <span class="grade-value grade-good">92</span>
+                        <p style="color:#666; margin-top:6px; font-size:0.95em;">
+                            <i class="fas fa-calendar-alt"></i> Og'zaki — 03.02.2026
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-clipboard-list"></i> Vazifalar</h3>
+                    <div class="assignment-item">
+                        <h4>Matematika — Kvadrat tenglamalar</h4>
+                        <div class="badge-status badge-graded">
+                            <i class="fas fa-check-circle"></i> Baholandi: 95
+                        </div>
+                        <p style="color:#666; margin-top:8px; font-size:0.9em;">
+                            <i class="fas fa-clock"></i> Muddat: 10.02.2026
+                        </p>
+                    </div>
+                    <div class="assignment-item">
+                        <h4>Fizika — Nyuton qonunlari</h4>
+                        <div class="badge-status badge-submitted">
+                            <i class="fas fa-paper-plane"></i> Topshirildi
+                        </div>
+                        <p style="color:#666; margin-top:8px; font-size:0.9em;">
+                            <i class="fas fa-clock"></i> Muddat: 12.02.2026
+                        </p>
+                    </div>
+                    <div class="assignment-item">
+                        <h4>Ingliz tili — Essay yozish</h4>
+                        <div class="badge-status badge-pending">
+                            <i class="fas fa-hourglass-half"></i> Kutilmoqda
+                        </div>
+                        <p style="color:#666; margin-top:8px; font-size:0.9em;">
+                            <i class="fas fa-clock"></i> Muddat: 15.02.2026
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h3><i class="fas fa-gamepad"></i> Gamification</h3>
+                    <div class="xp-section">
+                        <div class="level-badge">
+                            <i class="fas fa-trophy"></i> Level 5
+                        </div>
+                        <div style="color:#666; margin-bottom:8px;">1250 / 1500 XP</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width:83%;"></div>
+                        </div>
+                        <div style="font-size:0.9em; color:#999;">Level 6 gacha 250 XP qoldi</div>
+                    </div>
+
+                    <h4 style="color:#667eea; margin-bottom:14px; text-align:center;">
+                        <i class="fas fa-medal"></i> Badgelar
+                    </h4>
+                    <div class="badges-grid">
+                        <div class="earn-badge">
+                            <i class="fas fa-star"></i>
+                            <span>A+ Student</span>
+                        </div>
+                        <div class="earn-badge">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Perfect Week</span>
+                        </div>
+                        <div class="earn-badge">
+                            <i class="fas fa-fire"></i>
+                            <span>5 Day Streak</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-chart-bar"></i> Fan bo'yicha Progress</h3>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-weight:600;">
+                            <span><i class="fas fa-calculator"></i> Matematika</span>
+                            <span style="color:#667eea;">92%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:92%;"></div></div>
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-weight:600;">
+                            <span><i class="fas fa-atom"></i> Fizika</span>
+                            <span style="color:#667eea;">88%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:88%;"></div></div>
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-weight:600;">
+                            <span><i class="fas fa-language"></i> Ingliz tili</span>
+                            <span style="color:#667eea;">90%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:90%;"></div></div>
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; font-weight:600;">
+                            <span><i class="fas fa-landmark"></i> Tarix</span>
+                            <span style="color:#667eea;">85%</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width:85%;"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const name = currentUser.name || currentUser.firstName || 'O\'quvchi';
+        document.getElementById('userName').textContent = name;
+        document.getElementById('welcomeName').textContent = name;
+
+        function logout() {
+            if (confirm('Haqiqatan ham chiqmoqchimisiz?')) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('token');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

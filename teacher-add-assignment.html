@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Uyga Vazifa Qo'shish</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar h1 { font-size: 1.8em; display: flex; align-items: center; gap: 15px; }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .back-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+        
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+        
+        .file-upload:hover {
+            background: #e9ecef;
+            border-color: #764ba2;
+        }
+        
+        .file-upload i {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .btn-group { flex-direction: column; }
+            .navbar { padding: 15px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>
+            <i class="fas fa-tasks"></i>
+            Uyga Vazifa Qo'shish
+        </h1>
+        <a href="teacher-dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Orqaga
+        </a>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h2>
+                <i class="fas fa-plus-circle"></i>
+                Yangi Uyga Vazifa
+            </h2>
+            
+            <div id="alert" class="alert"></div>
+            
+            <form id="assignmentForm">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-heading"></i>
+                        Vazifa Nomi
+                    </label>
+                    <input type="text" id="title" name="title" placeholder="Masalan: Kvadrat tenglamalar" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-book"></i>
+                            Fan
+                        </label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Fanni tanlang</option>
+                            <option value="matematika">Matematika</option>
+                            <option value="fizika">Fizika</option>
+                            <option value="kimyo">Kimyo</option>
+                            <option value="biologiya">Biologiya</option>
+                            <option value="ingliz">Ingliz tili</option>
+                            <option value="tarix">Tarix</option>
+                            <option value="adabiyot">Adabiyot</option>
+                            <option value="informatika">Informatika</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-users"></i>
+                            Sinf
+                        </label>
+                        <select id="class" name="class" required>
+                            <option value="">Sinfni tanlang</option>
+                            <option value="10-A">10-A sinf</option>
+                            <option value="10-B">10-B sinf</option>
+                            <option value="11-A">11-A sinf</option>
+                            <option value="11-B">11-B sinf</option>
+                            <option value="9-A">9-A sinf</option>
+                            <option value="9-B">9-B sinf</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-align-left"></i>
+                        Vazifa Tavsifi
+                    </label>
+                    <textarea id="description" name="description" placeholder="Vazifa haqida batafsil ma'lumot..." required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-calendar-alt"></i>
+                            Topshirish Muddati
+                        </label>
+                        <input type="datetime-local" id="dueDate" name="dueDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-star"></i>
+                            Maksimal Ball
+                        </label>
+                        <input type="number" id="maxScore" name="maxScore" value="100" min="1" max="100" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-paperclip"></i>
+                        Fayl Biriktirish (ixtiyoriy)
+                    </label>
+                    <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p style="margin: 10px 0; font-weight: 600;">Faylni yuklash uchun bosing</p>
+                        <p style="color: #666; font-size: 0.9em;">PDF, DOC, DOCX, JPG, PNG (Max 10MB)</p>
+                        <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <p id="fileName" style="margin-top: 15px; color: #667eea; font-weight: 600;"></p>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='teacher-dashboard.html'">
+                        <i class="fas fa-times"></i>
+                        Bekor Qilish
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i>
+                        Vazifani Saqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        
+        // Set minimum date to today
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('dueDate').min = now.toISOString().slice(0, 16);
+        
+        // File upload handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = `✓ ${file.name}`;
+            }
+        });
+        
+        // Form submission
+        document.getElementById('assignmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                subject: document.getElementById('subject').value,
+                class: document.getElementById('class').value,
+                description: document.getElementById('description').value,
+                dueDate: document.getElementById('dueDate').value,
+                maxScore: document.getElementById('maxScore').value,
+                file: document.getElementById('fileInput').files[0]?.name || null
+            };
+            
+            const alert = document.getElementById('alert');
+            
+            try {
+                // Demo mode - save to localStorage
+                const assignments = JSON.parse(localStorage.getItem('assignments') || '[]');
+                assignments.push({
+                    id: Date.now(),
+                    ...formData,
+                    createdAt: new Date().toISOString(),
+                    status: 'active',
+                    submissions: 0
+                });
+                localStorage.setItem('assignments', JSON.stringify(assignments));
+                
+                alert.className = 'alert alert-success';
+                alert.style.display = 'flex';
+                alert.innerHTML = '<i class="fas fa-check-circle"></i> Vazifa muvaffaqiyatli qo\'shildi!';
+                
+                setTimeout(() => {
+                    window.location.href = 'teacher-dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                alert.className = 'alert alert-error';
+                alert.style.display = 'flex';
+                alert.innerHTML = '<i class="fas fa-exclamation-circle"></i> Xatolik yuz berdi. Qaytadan urinib ko\'ring.';
+            }
+        });
+    </script>
+</body>
+</html>

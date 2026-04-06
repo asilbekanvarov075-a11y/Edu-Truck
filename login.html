@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduTrack - Kirish</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 45px 40px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 75px;
+            height: 75px;
+            background: white;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .logo i {
+            font-size: 2.3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header h1 { font-size: 1.9em; margin-bottom: 8px; }
+        .login-header p { opacity: 0.9; font-size: 1em; }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            font-size: 0.95em;
+        }
+
+        .tab.active { color: #667eea; border-bottom-color: #667eea; }
+        .tab:hover { color: #667eea; }
+
+        .login-body { padding: 32px 40px; }
+
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+
+        .form-group { margin-bottom: 20px; }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #444;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .input-wrapper { position: relative; }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 13px 13px 13px 42px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s;
+            background: white;
+            color: #333;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            text-align: center;
+            padding: 13px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            display: none;
+            font-size: 0.92em;
+        }
+
+        .status.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.info    { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h1>EduTrack</h1>
+            <p>Ta'lim Boshqaruv Tizimi</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt"></i> Kirish
+            </div>
+            <div class="tab" onclick="switchTab('register')">
+                <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
+            </div>
+        </div>
+
+        <div class="login-body">
+
+            <!-- LOGIN -->
+            <div id="loginPanel" class="form-panel active">
+                <div id="loginStatus" class="status"></div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="loginEmail" placeholder="email@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Parol</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Kirish
+                    </button>
+                </form>
+            </div>
+
+            <!-- REGISTER -->
+            <div id="registerPanel" class="form-panel">
+                <div id="registerStatus" class="status"></div>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Ism va Familiya</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="regName" placeholder="Ism Familiya" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="regEmail" placeholder="email@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Parol</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="regPassword" placeholder="Kamida 6 ta belgi" required minlength="6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-id-badge"></i> Rol</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-badge"></i>
+                            <select id="regRole" required>
+                                <option value="">-- Rolni tanlang --</option>
+                                <option value="STUDENT">O'quvchi</option>
+                                <option value="TEACHER">O'qituvchi</option>
+                                <option value="PARENT">Ota-ona</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="registerBtn">
+                        <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const DASHBOARD = {
+            STUDENT: 'dashboard.html',
+            TEACHER: 'teacher-dashboard.html',
+            PARENT:  'parent-dashboard.html',
+            ADMIN:   'admin-dashboard.html'
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach((t, i) =>
+                t.classList.toggle('active', (tab === 'login') ? i === 0 : i === 1)
+            );
+            document.getElementById('loginPanel').classList.toggle('active', tab === 'login');
+            document.getElementById('registerPanel').classList.toggle('active', tab === 'register');
+        }
+
+        function showStatus(id, type, msg) {
+            const el = document.getElementById(id);
+            el.className = `status ${type}`;
+            el.innerHTML = msg;
+            el.style.display = 'block';
+        }
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('edu_users') || '[]');
+        }
+
+        function saveUser(user) {
+            const users = getUsers();
+            users.push(user);
+            localStorage.setItem('edu_users', JSON.stringify(users));
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email    = document.getElementById('loginEmail').value.trim().toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const btn      = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            showStatus('loginStatus', 'info', '<i class="fas fa-spinner fa-spin"></i> Tekshirilmoqda...');
+
+            // Try real backend first
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            })
+            .then(r => r.json().then(d => ({ ok: r.ok, d })))
+            .then(({ ok, d }) => {
+                if (ok) {
+                    localStorage.setItem('token', d.token);
+                    localStorage.setItem('currentUser', JSON.stringify(d.user));
+                    showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${d.user.firstName}!`);
+                    setTimeout(() => { window.location.href = DASHBOARD[d.user.role] || 'dashboard.html'; }, 900);
+                } else {
+                    showStatus('loginStatus', 'error', `<i class="fas fa-exclamation-circle"></i> ${d.error}`);
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                // Offline / demo mode — use localStorage
+                const user = getUsers().find(u => u.email === email && u.password === password);
+                if (user) {
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${user.name}!`);
+                    setTimeout(() => { window.location.href = DASHBOARD[user.role] || 'dashboard.html'; }, 900);
+                } else {
+                    showStatus('loginStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Email yoki parol noto\'g\'ri');
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name     = document.getElementById('regName').value.trim();
+            const email    = document.getElementById('regEmail').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+            const role     = document.getElementById('regRole').value;
+            const btn      = document.getElementById('registerBtn');
+
+            btn.disabled = true;
+            showStatus('registerStatus', 'info', '<i class="fas fa-spinner fa-spin"></i> Ro\'yxatdan o\'tilmoqda...');
+
+            const [firstName, ...rest] = name.split(' ');
+            const lastName = rest.join(' ') || '-';
+
+            fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, firstName, lastName, role })
+            })
+            .then(r => r.json().then(d => ({ ok: r.ok, d })))
+            .then(({ ok, d }) => {
+                if (ok) {
+                    localStorage.setItem('token', d.token);
+                    localStorage.setItem('currentUser', JSON.stringify(d.user));
+                    showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli! Yo\'naltirilmoqda...');
+                    setTimeout(() => { window.location.href = DASHBOARD[d.user.role] || 'dashboard.html'; }, 1000);
+                } else {
+                    showStatus('registerStatus', 'error', `<i class="fas fa-exclamation-circle"></i> ${d.error}`);
+                    btn.disabled = false;
+                }
+            })
+            .catch(() => {
+                // Offline / demo mode
+                const users = getUsers();
+                if (users.find(u => u.email === email)) {
+                    showStatus('registerStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Bu email allaqachon ro\'yxatdan o\'tgan');
+                    btn.disabled = false;
+                    return;
+                }
+                const newUser = { id: Date.now(), name, email, password, role, createdAt: new Date().toISOString() };
+                saveUser(newUser);
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli ro\'yxatdan o\'tdingiz!');
+                setTimeout(() => { window.location.href = DASHBOARD[role] || 'dashboard.html'; }, 1000);
+            });
+        }
+    </script>
+</body>
+</html>
