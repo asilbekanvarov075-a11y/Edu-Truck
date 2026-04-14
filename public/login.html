@@ -317,14 +317,19 @@
                 }
             })
             .catch(() => {
-                // Offline / demo mode — use localStorage
-                const user = getUsers().find(u => u.email === email && u.password === password);
-                if (user) {
-                    localStorage.setItem('currentUser', JSON.stringify(user));
-                    showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${user.name}!`);
-                    setTimeout(() => { window.location.href = DASHBOARD[user.role] || 'dashboard.html'; }, 900);
-                } else {
+                // Offline / demo mode — bir email bilan bir nechta akkaunt bo'lishi mumkin
+                const matches = getUsers().filter(u => u.email === email && u.password === password);
+                if (matches.length === 0) {
                     showStatus('loginStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Email yoki parol noto\'g\'ri');
+                    btn.disabled = false;
+                } else if (matches.length === 1) {
+                    // Bitta akkaunt — to'g'ridan kirish
+                    localStorage.setItem('currentUser', JSON.stringify(matches[0]));
+                    showStatus('loginStatus', 'success', `<i class="fas fa-check-circle"></i> Xush kelibsiz, ${matches[0].name}!`);
+                    setTimeout(() => { window.location.href = DASHBOARD[matches[0].role] || 'dashboard.html'; }, 900);
+                } else {
+                    // Bir nechta akkaunt — rol tanlash
+                    showRolePicker(matches);
                     btn.disabled = false;
                 }
             });
@@ -362,19 +367,49 @@
                 }
             })
             .catch(() => {
-                // Offline / demo mode
-                const users = getUsers();
-                if (users.find(u => u.email === email)) {
-                    showStatus('registerStatus', 'error', '<i class="fas fa-exclamation-circle"></i> Bu email allaqachon ro\'yxatdan o\'tgan');
-                    btn.disabled = false;
-                    return;
-                }
+                // Offline / demo mode — bir email bilan bir nechta rol mumkin
                 const newUser = { id: Date.now(), name, email, password, role, createdAt: new Date().toISOString() };
                 saveUser(newUser);
                 localStorage.setItem('currentUser', JSON.stringify(newUser));
                 showStatus('registerStatus', 'success', '<i class="fas fa-check-circle"></i> Muvaffaqiyatli ro\'yxatdan o\'tdingiz!');
                 setTimeout(() => { window.location.href = DASHBOARD[role] || 'dashboard.html'; }, 1000);
             });
+        }
+        function showRolePicker(accounts) {
+            const ROLE_LABELS = { STUDENT: "O'quvchi", TEACHER: "O'qituvchi", PARENT: "Ota-ona", ADMIN: "Admin" };
+            const ROLE_ICONS  = { STUDENT: "fa-user-graduate", TEACHER: "fa-chalkboard-teacher", PARENT: "fa-users", ADMIN: "fa-user-shield" };
+
+            document.getElementById('loginPanel').innerHTML = `
+                <div style="text-align:center; margin-bottom:20px;">
+                    <i class="fas fa-users" style="font-size:2.5em; color:#667eea;"></i>
+                    <h3 style="color:#333; margin-top:10px;">Qaysi akkauntga kirasiz?</h3>
+                    <p style="color:#999; font-size:0.9em;">Bu email bilan bir nechta akkaunt mavjud</p>
+                </div>
+                ${accounts.map(u => `
+                    <div onclick="loginAs(${JSON.stringify(u).replace(/"/g, '&quot;')})"
+                         style="padding:16px 20px; background:#f8f9fa; border-radius:12px; margin-bottom:10px;
+                                cursor:pointer; border:2px solid #e0e0e0; transition:all 0.2s;
+                                display:flex; align-items:center; gap:15px;"
+                         onmouseover="this.style.borderColor='#667eea'; this.style.background='#f0f2ff'"
+                         onmouseout="this.style.borderColor='#e0e0e0'; this.style.background='#f8f9fa'">
+                        <i class="fas ${ROLE_ICONS[u.role] || 'fa-user'}" style="font-size:1.8em; color:#667eea; width:30px; text-align:center;"></i>
+                        <div>
+                            <div style="font-weight:700; color:#333;">${u.name}</div>
+                            <div style="font-size:0.88em; color:#667eea;">${ROLE_LABELS[u.role] || u.role}</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="margin-left:auto; color:#ccc;"></i>
+                    </div>
+                `).join('')}
+                <button onclick="location.reload()" style="width:100%; margin-top:10px; padding:12px; background:none;
+                    border:2px solid #e0e0e0; border-radius:10px; color:#666; cursor:pointer; font-weight:600;">
+                    <i class="fas fa-arrow-left"></i> Orqaga
+                </button>
+            `;
+        }
+
+        function loginAs(user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            window.location.href = DASHBOARD[user.role] || 'dashboard.html';
         }
     </script>
 </body>
