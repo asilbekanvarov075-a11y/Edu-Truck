@@ -186,6 +186,33 @@
 
         <div class="login-body">
 
+            <!-- GUEST BUTTONS -->
+            <div style="margin-bottom:20px;">
+                <p style="text-align:center; color:#999; font-size:0.88em; margin-bottom:12px;">
+                    <i class="fas fa-eye"></i> Sinab ko'rish uchun kirish:
+                </p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <button onclick="guestLogin('STUDENT')" style="padding:11px 8px; border-radius:10px; border:2px solid #667eea; background:#f0f2ff; color:#667eea; cursor:pointer; font-weight:600; font-size:0.88em; transition:all 0.2s;" onmouseover="this.style.background='#667eea';this.style.color='white'" onmouseout="this.style.background='#f0f2ff';this.style.color='#667eea'">
+                        <i class="fas fa-user-graduate"></i> O'quvchi
+                    </button>
+                    <button onclick="guestLogin('TEACHER')" style="padding:11px 8px; border-radius:10px; border:2px solid #28a745; background:#f0fff4; color:#28a745; cursor:pointer; font-weight:600; font-size:0.88em; transition:all 0.2s;" onmouseover="this.style.background='#28a745';this.style.color='white'" onmouseout="this.style.background='#f0fff4';this.style.color='#28a745'">
+                        <i class="fas fa-chalkboard-teacher"></i> O'qituvchi
+                    </button>
+                    <button onclick="guestLogin('PARENT')" style="padding:11px 8px; border-radius:10px; border:2px solid #ffc107; background:#fffdf0; color:#856404; cursor:pointer; font-weight:600; font-size:0.88em; transition:all 0.2s;" onmouseover="this.style.background='#ffc107';this.style.color='white'" onmouseout="this.style.background='#fffdf0';this.style.color='#856404'">
+                        <i class="fas fa-users"></i> Ota-ona
+                    </button>
+                    <button onclick="guestLogin('ADMIN')" style="padding:11px 8px; border-radius:10px; border:2px solid #764ba2; background:#f8f0ff; color:#764ba2; cursor:pointer; font-weight:600; font-size:0.88em; transition:all 0.2s;" onmouseover="this.style.background='#764ba2';this.style.color='white'" onmouseout="this.style.background='#f8f0ff';this.style.color='#764ba2'">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+                <span style="color:#999; font-size:0.85em;">yoki o'z akkauntingiz bilan</span>
+                <div style="flex:1; height:1px; background:#e0e0e0;"></div>
+            </div>
+
             <!-- LOGIN -->
             <div id="loginPanel" class="form-panel active">
                 <div id="loginStatus" class="status"></div>
@@ -375,6 +402,18 @@
                 setTimeout(() => { window.location.href = DASHBOARD[role] || 'dashboard.html'; }, 1000);
             });
         }
+        function guestLogin(role) {
+            const guests = {
+                STUDENT: { id: 'guest-student', name: 'Alisher Valiyev', email: 'guest@demo.uz', role: 'STUDENT', isGuest: true },
+                TEACHER: { id: 'guest-teacher', name: 'Nodira Karimova', email: 'guest@demo.uz', role: 'TEACHER', isGuest: true },
+                PARENT:  { id: 'guest-parent',  name: 'Dilshod Rahimov', email: 'guest@demo.uz', role: 'PARENT',  isGuest: true },
+                ADMIN:   { id: 'guest-admin',   name: 'Administrator',   email: 'guest@demo.uz', role: 'ADMIN',   isGuest: true },
+            };
+            const user = guests[role];
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            window.location.href = DASHBOARD[role];
+        }
+
         function showRolePicker(accounts) {
             const ROLE_LABELS = { STUDENT: "O'quvchi", TEACHER: "O'qituvchi", PARENT: "Ota-ona", ADMIN: "Admin" };
             const ROLE_ICONS  = { STUDENT: "fa-user-graduate", TEACHER: "fa-chalkboard-teacher", PARENT: "fa-users", ADMIN: "fa-user-shield" };
