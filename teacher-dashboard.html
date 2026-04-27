@@ -135,10 +135,64 @@
         .empty-state { text-align: center; padding: 30px; color: #999; }
         .empty-state i { font-size: 3em; margin-bottom: 12px; display: block; opacity: 0.4; }
 
+        /* TABS */
+        .tabs-nav {
+            display: flex; gap: 5px; background: white; padding: 8px;
+            border-radius: 15px; margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .tab-btn {
+            flex: 1; padding: 12px 10px; border: none; border-radius: 10px;
+            cursor: pointer; font-weight: 600; font-size: 0.92em;
+            background: transparent; color: #999; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .tab-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tab-btn:hover:not(.active) { background: #f0f2ff; color: #667eea; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* GRADE TABLE */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 13px 15px; text-align: left; border-bottom: 1px solid #f0f0f0; font-size: 0.95em; }
+        th { background: #f8f9fa; font-weight: 700; color: #667eea; }
+        tr:hover td { background: #fafbff; }
+        .grade-input {
+            width: 70px; padding: 6px 10px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 0.95em; text-align: center;
+        }
+        .grade-input:focus { outline: none; border-color: #667eea; }
+        .btn-sm {
+            padding: 6px 14px; border: none; border-radius: 8px; cursor: pointer;
+            font-weight: 600; font-size: 0.85em; transition: all 0.2s;
+        }
+        .btn-green { background: #28a745; color: white; }
+        .btn-green:hover { background: #218838; }
+        .btn-red { background: #dc3545; color: white; }
+        .btn-red:hover { background: #c82333; }
+
+        /* ATTENDANCE */
+        .att-btn {
+            padding: 7px 14px; border: 2px solid #e0e0e0; border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-size: 0.82em; background: white;
+            transition: all 0.2s; margin-right: 4px;
+        }
+        .att-btn.selected-present { background: #28a745; color: white; border-color: #28a745; }
+        .att-btn.selected-absent  { background: #dc3545; color: white; border-color: #dc3545; }
+        .att-btn.selected-late    { background: #ffc107; color: #333; border-color: #ffc107; }
+
+        /* CHART */
+        .bar-chart { display: flex; flex-direction: column; gap: 12px; }
+        .bar-row { display: flex; align-items: center; gap: 12px; }
+        .bar-label { width: 120px; font-size: 0.9em; font-weight: 600; color: #444; flex-shrink: 0; }
+        .bar-track { flex: 1; background: #e0e0e0; border-radius: 6px; height: 22px; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 6px; transition: width 1s ease; display: flex; align-items: center; padding-left: 8px; }
+        .bar-val { font-size: 0.82em; font-weight: 700; color: white; }
+
         @media (max-width: 768px) {
             .content-grid { grid-template-columns: 1fr; }
             .navbar { padding: 15px 20px; }
-            .quick-actions { grid-template-columns: 1fr; }
+            .tabs-nav { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -186,48 +240,95 @@
         </div>
     </div>
 
-    <div class="content-grid">
-        <div>
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="fas fa-clipboard-list"></i> Vazifalar</h3>
-                    <button class="btn-add" onclick="openModal()">
-                        <i class="fas fa-plus"></i> Yangi Vazifa
-                    </button>
-                </div>
-                <div id="assignmentsList"></div>
+    <!-- TABS NAV -->
+    <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('assignments')"><i class="fas fa-clipboard-list"></i> Vazifalar</button>
+        <button class="tab-btn" onclick="switchTab('grades')"><i class="fas fa-star"></i> Baho Qo'yish</button>
+        <button class="tab-btn" onclick="switchTab('attendance')"><i class="fas fa-calendar-check"></i> Davomat</button>
+        <button class="tab-btn" onclick="switchTab('stats')"><i class="fas fa-chart-bar"></i> Statistika</button>
+    </div>
+
+    <!-- TAB: VAZIFALAR -->
+    <div id="tab-assignments" class="tab-panel active">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-clipboard-list"></i> Vazifalar</h3>
+                <button class="btn-add" onclick="openModal()"><i class="fas fa-plus"></i> Yangi Vazifa</button>
             </div>
+            <div id="assignmentsList"></div>
         </div>
+    </div>
 
-        <div>
-            <div class="card">
-                <h3 style="margin-bottom:18px;"><i class="fas fa-bolt"></i> Tezkor Amallar</h3>
-                <div class="quick-actions">
-                    <button class="action-btn" onclick="openModal()">
-                        <i class="fas fa-plus-circle"></i> Yangi Vazifa
-                    </button>
-                    <button class="action-btn" onclick="alert('Tez orada!')">
-                        <i class="fas fa-star"></i> Baho Qo'yish
-                    </button>
-                    <button class="action-btn" onclick="alert('Tez orada!')">
-                        <i class="fas fa-calendar-check"></i> Davomat
-                    </button>
-                    <button class="action-btn" onclick="alert('Tez orada!')">
-                        <i class="fas fa-chart-bar"></i> Statistika
-                    </button>
+    <!-- TAB: BAHO QO'YISH -->
+    <div id="tab-grades" class="tab-panel">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-star"></i> Baho Qo'yish</h3>
+                <select id="gradeSubjectFilter" onchange="renderGradeTable()" style="padding:8px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:0.9em;">
+                    <option value="">Fan tanlang</option>
+                    <option>Matematika</option><option>Fizika</option><option>Ingliz tili</option>
+                    <option>Kimyo</option><option>Biologiya</option><option>Tarix</option>
+                    <option>Adabiyot</option><option>Informatika</option>
+                </select>
+            </div>
+            <div id="gradeTableWrap"></div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:18px;"><i class="fas fa-history"></i> Oxirgi Baholar</h3>
+            <div id="recentGrades"></div>
+        </div>
+    </div>
+
+    <!-- TAB: DAVOMAT -->
+    <div id="tab-attendance" class="tab-panel">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-calendar-check"></i> Davomat Belgilash</h3>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <input type="date" id="attDate" style="padding:8px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:0.9em;">
+                    <select id="attSubject" style="padding:8px 12px; border:2px solid #e0e0e0; border-radius:8px; font-size:0.9em;">
+                        <option value="">Fan tanlang</option>
+                        <option>Matematika</option><option>Fizika</option><option>Ingliz tili</option>
+                        <option>Kimyo</option><option>Biologiya</option><option>Tarix</option>
+                        <option>Adabiyot</option><option>Informatika</option>
+                    </select>
+                    <button class="btn-add" onclick="saveAttendance()"><i class="fas fa-save"></i> Saqlash</button>
                 </div>
             </div>
+            <div id="attendanceTable"></div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:18px;"><i class="fas fa-history"></i> Davomat Tarixi</h3>
+            <div id="attendanceHistory"></div>
+        </div>
+    </div>
 
-            <div class="card">
-                <h3 style="margin-bottom:18px;"><i class="fas fa-bell"></i> Bildirishnomalar</h3>
-                <div id="notifList">
-                    <div style="padding:14px; background:#f8f9fa; border-radius:10px; color:#666; text-align:center; font-size:0.95em;">
-                        <i class="fas fa-check-circle" style="color:#28a745;"></i> Hamma narsa yaxshi
-                    </div>
+    <!-- TAB: STATISTIKA -->
+    <div id="tab-stats" class="tab-panel">
+        <div class="content-grid">
+            <div>
+                <div class="card">
+                    <h3 style="margin-bottom:20px;"><i class="fas fa-chart-bar"></i> Fanlar bo'yicha O'rtacha Ball</h3>
+                    <div class="bar-chart" id="subjectChart"></div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom:20px;"><i class="fas fa-trophy"></i> O'quvchilar Reytingi</h3>
+                    <div id="studentRanking"></div>
+                </div>
+            </div>
+            <div>
+                <div class="card">
+                    <h3 style="margin-bottom:18px;"><i class="fas fa-info-circle"></i> Umumiy Ko'rsatkichlar</h3>
+                    <div id="overallStats"></div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom:18px;"><i class="fas fa-calendar-check"></i> Davomat Statistikasi</h3>
+                    <div id="attStats"></div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- MODAL: Yangi Vazifa -->
@@ -338,12 +439,22 @@
         return new Date(d).toLocaleDateString('uz-UZ', { day:'2-digit', month:'2-digit', year:'numeric' });
     }
 
-    function openModal() {
-        document.getElementById('modalOverlay').classList.add('open');
+    // ── TAB SWITCHING ──────────────────────────────────────────
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            const tabs = ['assignments','grades','attendance','stats'];
+            b.classList.toggle('active', tabs[i] === tab);
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        if (tab === 'grades')     renderGradeTable();
+        if (tab === 'attendance') renderAttendanceTable();
+        if (tab === 'stats')      renderStats();
     }
-    function closeModal() {
-        document.getElementById('modalOverlay').classList.remove('open');
-    }
+
+    // ── MODAL ──────────────────────────────────────────────────
+    function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
 
     function saveAssignment() {
         const title = document.getElementById('aTitle').value.trim();
@@ -351,27 +462,16 @@
         const desc = document.getElementById('aDesc').value.trim();
         const due = document.getElementById('aDue').value;
         const max = parseInt(document.getElementById('aMax').value) || 100;
-
-        if (!title || !due) {
-            alert('Vazifa nomi va muddatni kiriting!');
-            return;
-        }
-
+        if (!title || !due) { alert('Vazifa nomi va muddatni kiriting!'); return; }
         const assignment = {
-            id: Date.now().toString(),
-            title, subject, description: desc,
+            id: Date.now().toString(), title, subject, description: desc,
             dueDate: due, maxPoints: max,
-            teacherId: currentUser.id,
-            teacherEmail: currentUser.email,
-            teacherName: name,
+            teacherId: currentUser.id, teacherEmail: currentUser.email, teacherName: name,
             createdAt: new Date().toISOString()
         };
-
         const list = getAssignments();
         list.unshift(assignment);
         saveAssignments(list);
-
-        // Reset form
         document.getElementById('aTitle').value = '';
         document.getElementById('aDesc').value = '';
         closeModal();
@@ -380,9 +480,283 @@
 
     function deleteAssignment(id) {
         if (!confirm('Bu vazifani o\'chirishni xohlaysizmi?')) return;
-        const list = getAssignments().filter(a => a.id !== id);
-        saveAssignments(list);
+        saveAssignments(getAssignments().filter(a => a.id !== id));
         renderAssignments();
+    }
+
+    // ── GRADES ─────────────────────────────────────────────────
+    function getGrades() { return JSON.parse(localStorage.getItem('edu_grades') || '[]'); }
+    function saveGrades(g) { localStorage.setItem('edu_grades', JSON.stringify(g)); }
+
+    function renderGradeTable() {
+        const subject = document.getElementById('gradeSubjectFilter').value;
+        const students = getUsers().filter(u => u.role === 'STUDENT');
+        const wrap = document.getElementById('gradeTableWrap');
+
+        if (!subject) {
+            wrap.innerHTML = '<div class="empty-state"><i class="fas fa-arrow-up"></i>Fan tanlang</div>';
+            renderRecentGrades();
+            return;
+        }
+
+        if (students.length === 0) {
+            wrap.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>O\'quvchilar ro\'yxatdan o\'tmagan</div>';
+            return;
+        }
+
+        const grades = getGrades();
+        wrap.innerHTML = `
+        <table>
+            <thead><tr>
+                <th>O'quvchi</th>
+                <th>Ball (0-100)</th>
+                <th>Izoh</th>
+                <th>Amal</th>
+            </tr></thead>
+            <tbody>
+            ${students.map(s => {
+                const existing = grades.find(g => g.studentId === s.id && g.subject === subject);
+                return `<tr>
+                    <td><i class="fas fa-user-graduate" style="color:#667eea;margin-right:8px;"></i>${s.name || s.firstName || 'O\'quvchi'}</td>
+                    <td><input class="grade-input" type="number" min="0" max="100" id="grade_${s.id}" value="${existing ? existing.value : ''}" placeholder="—"></td>
+                    <td><input style="width:100%;padding:6px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:0.9em;" type="text" id="comment_${s.id}" value="${existing ? (existing.comment||'') : ''}" placeholder="Izoh..."></td>
+                    <td><button class="btn-sm btn-green" onclick="saveGrade('${s.id}','${(s.name||s.firstName||'').replace(/'/g,"\\'")}')"><i class="fas fa-check"></i> Saqlash</button></td>
+                </tr>`;
+            }).join('')}
+            </tbody>
+        </table>`;
+        renderRecentGrades();
+    }
+
+    function saveGrade(studentId, studentName) {
+        const subject = document.getElementById('gradeSubjectFilter').value;
+        const val = parseFloat(document.getElementById('grade_' + studentId).value);
+        const comment = document.getElementById('comment_' + studentId).value.trim();
+        if (isNaN(val) || val < 0 || val > 100) { alert('0 dan 100 gacha ball kiriting!'); return; }
+
+        const grades = getGrades().filter(g => !(g.studentId === studentId && g.subject === subject));
+        grades.unshift({
+            id: Date.now().toString(), studentId, studentName, subject,
+            value: val, comment,
+            teacherId: currentUser.id, teacherName: name,
+            createdAt: new Date().toISOString()
+        });
+        saveGrades(grades);
+        renderRecentGrades();
+        renderStats();
+        // flash
+        const btn = document.querySelector(`button[onclick="saveGrade('${studentId}','${studentName.replace(/'/g,"\\'")}')"]`);
+        if (btn) { btn.textContent = '✓ Saqlandi'; btn.style.background='#155724'; setTimeout(()=>{ btn.innerHTML='<i class="fas fa-check"></i> Saqlash'; btn.style.background=''; },1500); }
+    }
+
+    function renderRecentGrades() {
+        const grades = getGrades().filter(g => g.teacherId === currentUser.id).slice(0, 10);
+        const el = document.getElementById('recentGrades');
+        if (grades.length === 0) {
+            el.innerHTML = '<div class="empty-state"><i class="fas fa-star"></i>Hali baho qo\'yilmagan</div>';
+            return;
+        }
+        el.innerHTML = `<table><thead><tr><th>O'quvchi</th><th>Fan</th><th>Ball</th><th>Izoh</th><th>Sana</th></tr></thead><tbody>
+        ${grades.map(g => `<tr>
+            <td>${g.studentName}</td>
+            <td><span style="background:#f0f2ff;color:#667eea;padding:3px 10px;border-radius:12px;font-size:0.85em;">${g.subject}</span></td>
+            <td><strong style="color:${g.value>=80?'#28a745':g.value>=60?'#ffc107':'#dc3545'}">${g.value}</strong></td>
+            <td style="color:#666;font-size:0.9em;">${g.comment||'—'}</td>
+            <td style="color:#999;font-size:0.85em;">${formatDate(g.createdAt)}</td>
+        </tr>`).join('')}
+        </tbody></table>`;
+    }
+
+    // ── ATTENDANCE ─────────────────────────────────────────────
+    function getAttendance() { return JSON.parse(localStorage.getItem('edu_attendance') || '[]'); }
+    function saveAttendanceData(d) { localStorage.setItem('edu_attendance', JSON.stringify(d)); }
+
+    // temp state for current session
+    let attState = {};
+
+    function renderAttendanceTable() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('attDate').value = today;
+        attState = {};
+        const students = getUsers().filter(u => u.role === 'STUDENT');
+        const el = document.getElementById('attendanceTable');
+
+        if (students.length === 0) {
+            el.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i>O\'quvchilar ro\'yxatdan o\'tmagan</div>';
+            renderAttendanceHistory();
+            return;
+        }
+
+        el.innerHTML = `<table>
+            <thead><tr><th>O'quvchi</th><th>Holat</th></tr></thead>
+            <tbody>
+            ${students.map(s => `<tr>
+                <td><i class="fas fa-user-graduate" style="color:#667eea;margin-right:8px;"></i>${s.name||s.firstName||'O\'quvchi'}</td>
+                <td>
+                    <button class="att-btn" onclick="setAtt('${s.id}','PRESENT',this)"><i class="fas fa-check"></i> Keldi</button>
+                    <button class="att-btn" onclick="setAtt('${s.id}','ABSENT',this)"><i class="fas fa-times"></i> Kelmadi</button>
+                    <button class="att-btn" onclick="setAtt('${s.id}','LATE',this)"><i class="fas fa-clock"></i> Kech</button>
+                </td>
+            </tr>`).join('')}
+            </tbody>
+        </table>`;
+        renderAttendanceHistory();
+    }
+
+    function setAtt(studentId, status, btn) {
+        attState[studentId] = status;
+        const row = btn.closest('tr');
+        row.querySelectorAll('.att-btn').forEach(b => b.className = 'att-btn');
+        const cls = {PRESENT:'selected-present', ABSENT:'selected-absent', LATE:'selected-late'};
+        btn.classList.add(cls[status]);
+    }
+
+    function saveAttendance() {
+        const date = document.getElementById('attDate').value;
+        const subject = document.getElementById('attSubject').value;
+        if (!date || !subject) { alert('Sana va fanni tanlang!'); return; }
+        if (Object.keys(attState).length === 0) { alert('Kamida bitta o\'quvchi uchun holat belgilang!'); return; }
+
+        const all = getAttendance().filter(a => !(a.date === date && a.subject === subject));
+        const students = getUsers().filter(u => u.role === 'STUDENT');
+
+        students.forEach(s => {
+            const status = attState[s.id] || 'ABSENT';
+            all.push({
+                id: Date.now().toString() + s.id,
+                studentId: s.id,
+                studentName: s.name || s.firstName || 'O\'quvchi',
+                subject, date, status,
+                teacherId: currentUser.id, teacherName: name,
+                createdAt: new Date().toISOString()
+            });
+        });
+
+        saveAttendanceData(all);
+        attState = {};
+        renderAttendanceTable();
+        renderStats();
+        alert(`${date} — ${subject} davomati saqlandi!`);
+    }
+
+    function renderAttendanceHistory() {
+        const records = getAttendance()
+            .filter(a => a.teacherId === currentUser.id)
+            .sort((a,b) => b.date.localeCompare(a.date))
+            .slice(0, 20);
+        const el = document.getElementById('attendanceHistory');
+        if (records.length === 0) {
+            el.innerHTML = '<div class="empty-state"><i class="fas fa-calendar"></i>Hali davomat belgilanmagan</div>';
+            return;
+        }
+        const STATUS = { PRESENT:'<span style="color:#28a745;font-weight:600;"><i class="fas fa-check"></i> Keldi</span>', ABSENT:'<span style="color:#dc3545;font-weight:600;"><i class="fas fa-times"></i> Kelmadi</span>', LATE:'<span style="color:#ffc107;font-weight:600;"><i class="fas fa-clock"></i> Kech</span>' };
+        el.innerHTML = `<table><thead><tr><th>Sana</th><th>Fan</th><th>O'quvchi</th><th>Holat</th></tr></thead><tbody>
+        ${records.map(r=>`<tr>
+            <td>${r.date}</td>
+            <td><span style="background:#f0f2ff;color:#667eea;padding:3px 10px;border-radius:12px;font-size:0.85em;">${r.subject}</span></td>
+            <td>${r.studentName}</td>
+            <td>${STATUS[r.status]||r.status}</td>
+        </tr>`).join('')}
+        </tbody></table>`;
+    }
+
+    // ── STATISTICS ─────────────────────────────────────────────
+    function renderStats() {
+        const grades = getGrades().filter(g => g.teacherId === currentUser.id);
+        const attendance = getAttendance().filter(a => a.teacherId === currentUser.id);
+        const students = getUsers().filter(u => u.role === 'STUDENT');
+
+        // Subject averages
+        const subjects = [...new Set(grades.map(g => g.subject))];
+        const subjectChart = document.getElementById('subjectChart');
+        if (subjects.length === 0) {
+            subjectChart.innerHTML = '<div class="empty-state"><i class="fas fa-chart-bar"></i>Hali baho qo\'yilmagan</div>';
+        } else {
+            subjectChart.innerHTML = subjects.map(sub => {
+                const subGrades = grades.filter(g => g.subject === sub);
+                const avg = (subGrades.reduce((s,g)=>s+g.value,0)/subGrades.length).toFixed(1);
+                const pct = Math.round(avg);
+                return `<div class="bar-row">
+                    <div class="bar-label">${sub}</div>
+                    <div class="bar-track"><div class="bar-fill" style="width:${pct}%"><span class="bar-val">${avg}</span></div></div>
+                </div>`;
+            }).join('');
+        }
+
+        // Student ranking
+        const ranking = document.getElementById('studentRanking');
+        if (grades.length === 0) {
+            ranking.innerHTML = '<div class="empty-state"><i class="fas fa-trophy"></i>Ma\'lumot yo\'q</div>';
+        } else {
+            const byStudent = {};
+            grades.forEach(g => {
+                if (!byStudent[g.studentId]) byStudent[g.studentId] = { name: g.studentName, grades: [] };
+                byStudent[g.studentId].grades.push(g.value);
+            });
+            const ranked = Object.values(byStudent)
+                .map(s => ({ name: s.name, avg: (s.grades.reduce((a,b)=>a+b,0)/s.grades.length).toFixed(1) }))
+                .sort((a,b) => b.avg - a.avg);
+            ranking.innerHTML = `<table><thead><tr><th>#</th><th>O'quvchi</th><th>O'rtacha</th></tr></thead><tbody>
+            ${ranked.map((s,i)=>`<tr>
+                <td><strong style="color:${i===0?'#ffc107':i===1?'#999':i===2?'#cd7f32':'#667eea'}">${i+1}</strong></td>
+                <td>${s.name}</td>
+                <td><strong style="color:${s.avg>=80?'#28a745':s.avg>=60?'#ffc107':'#dc3545'}">${s.avg}</strong></td>
+            </tr>`).join('')}
+            </tbody></table>`;
+        }
+
+        // Overall stats
+        const overall = document.getElementById('overallStats');
+        const totalGrades = grades.length;
+        const avgAll = totalGrades ? (grades.reduce((s,g)=>s+g.value,0)/totalGrades).toFixed(1) : '—';
+        const above80 = grades.filter(g=>g.value>=80).length;
+        overall.innerHTML = `
+            <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#f8f9fa;border-radius:10px;">
+                    <span><i class="fas fa-users" style="color:#667eea;margin-right:8px;"></i>O'quvchilar</span>
+                    <strong>${students.length}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#f8f9fa;border-radius:10px;">
+                    <span><i class="fas fa-star" style="color:#ffc107;margin-right:8px;"></i>Jami baholar</span>
+                    <strong>${totalGrades}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#f8f9fa;border-radius:10px;">
+                    <span><i class="fas fa-chart-line" style="color:#28a745;margin-right:8px;"></i>O'rtacha ball</span>
+                    <strong style="color:#28a745;">${avgAll}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#f8f9fa;border-radius:10px;">
+                    <span><i class="fas fa-trophy" style="color:#ffc107;margin-right:8px;"></i>80+ ball</span>
+                    <strong style="color:#667eea;">${above80}</strong>
+                </div>
+            </div>`;
+
+        // Attendance stats
+        const attEl = document.getElementById('attStats');
+        const present = attendance.filter(a=>a.status==='PRESENT').length;
+        const absent  = attendance.filter(a=>a.status==='ABSENT').length;
+        const late    = attendance.filter(a=>a.status==='LATE').length;
+        const total   = attendance.length;
+        const pct = total ? Math.round(present/total*100) : 0;
+        attEl.innerHTML = total === 0
+            ? '<div class="empty-state"><i class="fas fa-calendar"></i>Davomat ma\'lumoti yo\'q</div>'
+            : `<div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#d4edda;border-radius:10px;">
+                    <span><i class="fas fa-check" style="color:#28a745;margin-right:8px;"></i>Keldi</span>
+                    <strong style="color:#28a745;">${present}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#f8d7da;border-radius:10px;">
+                    <span><i class="fas fa-times" style="color:#dc3545;margin-right:8px;"></i>Kelmadi</span>
+                    <strong style="color:#dc3545;">${absent}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#fff3cd;border-radius:10px;">
+                    <span><i class="fas fa-clock" style="color:#ffc107;margin-right:8px;"></i>Kech</span>
+                    <strong style="color:#856404;">${late}</strong>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:12px;background:#f8f9fa;border-radius:10px;">
+                    <span><i class="fas fa-percent" style="color:#667eea;margin-right:8px;"></i>Davomat %</span>
+                    <strong style="color:#667eea;">${pct}%</strong>
+                </div>
+            </div>`;
     }
 
     function logout() {
@@ -393,11 +767,14 @@
         }
     }
 
-    // Close modal on overlay click
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeModal();
     });
 
+    // Init
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('aDue').value = tomorrow.toISOString().split('T')[0];
     renderAssignments();
 </script>
 </body>
